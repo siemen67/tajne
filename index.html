@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zostaniesz moją Walentynką?</title>
+    <style>
+        body { 
+            text-align: center; 
+            font-family: 'Arial', sans-serif; 
+            background: #FCCBE4; 
+            margin: 0; 
+            overflow: hidden; 
+            transition: background 0.5s;
+        }
+        .container { margin-top: 100px; position: relative; z-index: 10; }
+        #gif { width: 250px; border-radius: 20px; box-shadow: none !important; }
+        h1 { color: #ff4d4d; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        .buttons { margin-top: 30px; }
+        button { 
+            padding: 15px 35px; 
+            font-size: 20px; 
+            font-weight: bold;
+            cursor: pointer; 
+            border-radius: 50px; 
+            border: none; 
+            margin: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #yesBtn { background-color: #ff4d4d; color: white; transition: transform 0.2s; }
+        #noBtn { background-color: #888; color: white; position: absolute; }
+        
+        /* Klasa dodawana po kliknięciu TAK */
+        .celebrate-bg { background: #FD80AA !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img id="gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXFyZXpiYWZhOHN0cjY2YWxyazE4ZjgzajVzbjBmdWVvc2d0cGM3cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ygxlakNTPSHgV3k7m0/giphy.gif" alt="GIF">
+        <h1 id="question">Zostaniesz moją Walentynką? ❤️</h1>
+        <div class="buttons">
+            <button id="yesBtn">TAK!</button>
+            <button id="noBtn">Nie</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+        const gif = document.getElementById('gif');
+
+        let scale = 1; // Początkowa skala przycisku (100%)
+
+noBtn.addEventListener('mouseover', () => {
+    // 1. Obliczanie losowej pozycji (uciekanie)
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+
+    // 2. Zmniejszanie przycisku o 15% przy każdym "ataku" myszki
+    scale *= 0.85; 
+    noBtn.style.transform = `scale(${scale})`;
+
+    // Opcjonalnie: jeśli chcesz, żeby przycisk stał się całkiem nieklikalny poniżej pewnej wielkości
+    if (scale < 0.2) {
+        noBtn.style.pointerEvents = 'none';
+        noBtn.style.opacity = '0';
+    }
+});
+
+        // 2. EFEKT PO KLIKNIĘCIU "TAK"
+        yesBtn.addEventListener('click', () => {
+            // Zmiana tekstu i obrazka
+            question.innerHTML = "WIEDZIAŁEM! 🥰💗💗💗🥰";
+            question.style.fontSize = "50px";
+            question.style.color = "white";
+            gif.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3ptM21wOXJiZjd3M3hlaGVsMDV5amJqOXZzeTluc2YwaWUzenV4MyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NxC8VtyxqhMtpLoEEN/giphy.gif";
+            
+            // Zmiana tła
+            document.body.classList.add('celebrate-bg');
+            
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+
+            // WIELKI DESZCZ SERC
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              const particleCount = 50 * (timeLeft / duration);
+              
+              // Wyrzuty serc w różnych miejscach
+              confetti(Object.assign({}, defaults, { 
+                particleCount, 
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                shapes: ['circle'], // Można tu dodać własne kształty, ale circle w czerwieni wygląda jak płatki
+                colors: ['#ffffff', '#ffccd5', '#ff0000']
+              }));
+              confetti(Object.assign({}, defaults, { 
+                particleCount, 
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                colors: ['#ffffff', '#ffccd5', '#ff0000']
+              }));
+            }, 250);
+        });
+    </script>
+</body>
+</html>
