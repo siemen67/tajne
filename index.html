@@ -53,26 +53,36 @@
         const question = document.getElementById('question');
         const gif = document.getElementById('gif');
 
-        let scale = 1; // Początkowa skala przycisku (100%)
+        let noScale = 1;      // Początkowa skala dla NIE
+        let yesScale = 1;     // Początkowa skala dla TAK
+        let fontSize = 20;    // Początkowy rozmiar czcionki dla TAK
 
-noBtn.addEventListener('mouseover', () => {
-    // 1. Obliczanie losowej pozycji (uciekanie)
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+        noBtn.addEventListener('mouseover', () => {
+    // 1. Bezpieczne obliczanie pozycji (przycisk nie wyjdzie poza krawędzie)
+    // odejmujemy szerokość/wysokość przycisku, żeby nie wystawał poza prawą/dolną krawędź
+    const maxX = window.innerWidth - noBtn.offsetWidth;
+    const maxY = window.innerHeight - noBtn.offsetHeight;
+
+    // Losujemy pozycję, upewniając się, że nie jest mniejsza niż 0
+    const x = Math.max(0, Math.random() * maxX);
+    const y = Math.max(0, Math.random() * maxY);
     
-    noBtn.style.position = 'absolute';
+    noBtn.style.position = 'fixed'; // fixed lepiej trzyma się ekranu przy scrollowaniu
     noBtn.style.left = `${x}px`;
     noBtn.style.top = `${y}px`;
 
-    // 2. Zmniejszanie przycisku o 15% przy każdym "ataku" myszki
-    scale *= 0.85; 
-    noBtn.style.transform = `scale(${scale})`;
+    // 2. Zmniejszanie przycisku NIE
+    noScale *= 0.85;
+    noBtn.style.transform = `scale(${noScale})`;
 
-    // Opcjonalnie: jeśli chcesz, żeby przycisk stał się całkiem nieklikalny poniżej pewnej wielkości
-    if (scale < 0.2) {
-        noBtn.style.pointerEvents = 'none';
-        noBtn.style.opacity = '0';
-    }
+    // 3. Powiększanie przycisku TAK
+    yesScale += 0.15; // Zmniejszyłem skok, żeby rósł stabilniej
+    fontSize += 2;    
+    
+    yesBtn.style.transform = `scale(${yesScale})`;
+    yesBtn.style.fontSize = `${fontSize}px`;
+
+    if (noScale < 0.1) noBtn.style.display = 'none';
 });
 
         // 2. EFEKT PO KLIKNIĘCIU "TAK"
