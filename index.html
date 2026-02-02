@@ -58,27 +58,45 @@
         let fontSize = 20;    // Początkowy rozmiar czcionki dla TAK
 
         noBtn.addEventListener('mouseover', () => {
-    // 1. Bezpieczne obliczanie pozycji (przycisk nie wyjdzie poza krawędzie)
-    // odejmujemy szerokość/wysokość przycisku, żeby nie wystawał poza prawą/dolną krawędź
-    const maxX = window.innerWidth - noBtn.offsetWidth;
-    const maxY = window.innerHeight - noBtn.offsetHeight;
+    const padding = 20; // margines bezpieczeństwa w pikselach
+    let x, y, isOverlapping;
 
-    // Losujemy pozycję, upewniając się, że nie jest mniejsza niż 0
-    const x = Math.max(0, Math.random() * maxX);
-    const y = Math.max(0, Math.random() * maxY);
-    
-    noBtn.style.position = 'fixed'; // fixed lepiej trzyma się ekranu przy scrollowaniu
+    // Pobieramy aktualne wymiary i pozycję przycisku TAK
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    do {
+        // Losujemy nową pozycję dla NIE
+        const maxX = window.innerWidth - noBtn.offsetWidth;
+        const maxY = window.innerHeight - noBtn.offsetHeight;
+        x = Math.max(0, Math.random() * maxX);
+        y = Math.max(0, Math.random() * maxY);
+
+        // Sprawdzamy, czy nowa pozycja NIE koliduje z TAK
+        // Uwzględniamy skalę i wymiary obu przycisków
+        const noRect = {
+            left: x - padding,
+            right: x + noBtn.offsetWidth + padding,
+            top: y - padding,
+            bottom: y + noBtn.offsetHeight + padding
+        };
+
+        isOverlapping = !(noRect.right < yesRect.left || 
+                          noRect.left > yesRect.right || 
+                          noRect.bottom < yesRect.top || 
+                          noRect.top > yesRect.bottom);
+
+    } while (isOverlapping); // Losuj ponownie, jeśli się nakładają
+
+    noBtn.style.position = 'fixed';
     noBtn.style.left = `${x}px`;
     noBtn.style.top = `${y}px`;
 
-    // 2. Zmniejszanie przycisku NIE
+    // Reszta mechaniki (skalowanie)
     noScale *= 0.85;
     noBtn.style.transform = `scale(${noScale})`;
 
-    // 3. Powiększanie przycisku TAK
-    yesScale += 0.15; // Zmniejszyłem skok, żeby rósł stabilniej
-    fontSize += 2;    
-    
+    yesScale += 0.15;
+    fontSize += 2;
     yesBtn.style.transform = `scale(${yesScale})`;
     yesBtn.style.fontSize = `${fontSize}px`;
 
